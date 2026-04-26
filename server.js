@@ -9,8 +9,8 @@ app.post("/pay", async (req, res) => {
     const response = await axios.post(
       "https://paydrc.gofreshbakery.net/api/v5/",
       {
-        merchant_id: "TON_ID",
-        merchant_secrete: "TON_SECRET",
+        merchant_id: process.env.MERCHANT_ID,
+merchant_secrete: process.env.MERCHANT_SECRET,
         amount: req.body.amount,
         currency: "CDF",
         action: "debit",
