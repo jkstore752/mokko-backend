@@ -1,38 +1,32 @@
-const express = require("express");
-const axios = require("axios");
-
-const app = express();
-app.use(express.json());
-
 app.post("/pay", async (req, res) => {
+  const { amount, phone, reference } = req.body;
+
   try {
-    const response = await axios.post(
-      "https://paydrc.gofreshbakery.net/api/v5/",
-      {
-        merchant_id: process.env.MERCHANT_ID,
-merchant_secrete: process.env.MERCHANT_SECRET,
-        amount: req.body.amount,
-        currency: "CDF",
+    const response = await fetch("https://paydrc.gofreshbakery.net/api/v5/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        merchant_id: "j#bCzo4,AeMwQ(Plb",
+        merchant_secrete: "jzL6yChmAtPIixacib",
+        amount: amount,
+        currency: "USD",
         action: "debit",
-        customer_number: req.body.phone,
+        customer_number: phone,
         firstname: "Client",
         lastname: "Client",
         email: "client@email.com",
-        reference: req.body.reference,
-        method: "airtel",
-        callback_url: "https://mokko-backend.onrender.com/callback"
-      }
-    );
+        reference: reference,
+        method: "airtel"
+      })
+    });
 
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).send("Erreur paiement");
+    const data = await response.json();
+
+    res.json(data);
+
+  } catch (error) {
+    res.status(500).json({ error: "Erreur paiement" });
   }
 });
-
-app.post("/callback", (req, res) => {
-  console.log("Paiement reçu :", req.body);
-  res.status(200).json({ message: "OK" });
-});
-
-app.listen(3000, () => console.log("Serveur lancé"));
